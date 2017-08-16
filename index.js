@@ -9,15 +9,22 @@ var data = [];
 var images = [];
 
 let j = 0;
+var a = +new Date();
 for(let i = 0; i < 250; i=i+25){
+    if(i == 0){
+		var a = new Date();
+	}
 	++j;
 	let opt = {
 		hostname: 'movie.douban.com',
 		path: '/top250?start='+i,
 		port: 443
 	};
-	setTimeout(() => {
-	    https.get(opt, (res) => {
+	getData(opt);
+}
+
+function getData(opt){
+	https.get(opt, (res) => {
 			var html = '';
 
 		    // res 是 Class: http.IncomingMessage 的一个实例
@@ -34,7 +41,7 @@ for(let i = 0; i < 250; i=i+25){
 		    res.on('end', () => {
 				var $ = cheerio.load(html);
 				$('.item').each(function() {
-					    var item = {
+					var item = {
 						index: $('em', this).text(),
 						title: $('.title', this).text(), 
 						peopleImg: $('.pic img', this).attr('src'),
@@ -45,24 +52,20 @@ for(let i = 0; i < 250; i=i+25){
 				    data.push(item);
 				    images.push(item.peopleImg);
 				});
-				saveData('./data/data.json', data);
-	            downloadImg('./img/', images);
+				console.log(data.length);
+				if(data.length == 250){
+					saveData('./data/data.json', data);
+					downloadImg('./img/', images);
+				}
 		    });
 		}).on('error', (err) => {
 		    console.log(err);
 		});
-	}, j*100)
 }
-
-// setTimeout(() => {
-// 	saveData('./data/data.json', data);
-// 	downloadImg('./img/', images);
-// }, 0);
 
 function saveData(path, data) {
     fs.writeFile(path, JSON.stringify(data, null, 4), (err) => {
 		if (err) throw err;
-		console.log(data.length);
         console.log('Data saved');
     });
 }
@@ -79,6 +82,10 @@ function downloadImg(imgDir, images) {
 				fs.writeFile(imgDir + (x+1) + '.jpg', data, 'binary', (err) => {
 					if (err) throw err;
 					//console.log('Image downloaded: ', path.basename(url));
+					if(x == 249){
+						var b = +new Date();
+						console.log(b - a);
+					}
 				});
 			});
 	    }).on('error', (err) => {
