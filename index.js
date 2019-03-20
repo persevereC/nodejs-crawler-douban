@@ -1,5 +1,5 @@
 "use strict";
-console.log(222)
+
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
@@ -78,7 +78,6 @@ function downloadImg(imgDir, images) {
       res.on('data', (chunk) => {
         data += chunk;
       });
-      console.log(123)
       res.on('end', () => {
         fs.writeFile(imgDir + (x+1) + '.jpg', data, 'binary', (err) => {
 	  if (err) throw err;
