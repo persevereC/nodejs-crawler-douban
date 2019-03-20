@@ -18,7 +18,7 @@ for(let i = 0; i < 250; i=i+25){
   let opt = {
     hostname: 'movie.douban.com',
     path: '/top250?start='+i,
-    port: 443
+    port: 4431
   };
   getData(opt);
 }
